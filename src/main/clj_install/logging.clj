@@ -16,6 +16,8 @@
     (str "logs" java.io.File/separator (.format formatter now) ".log")))
 
 (defn setup-logging []
+  ;;disable clj-http spam
+  (System/setProperty "org.apache.commons.logging.Log" "org.apache.commons.logging.impl.NoOpLog")
   (let [filename (generate-logfile-name)]
     (reset! logfile-name filename)
     (timbre/merge-config!
