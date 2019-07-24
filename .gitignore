@@ -27,3 +27,6 @@ output.html
 launch.ps1
 out/
 .cljs_node_repl/
+ClojureTools/
+Files/
+info/
