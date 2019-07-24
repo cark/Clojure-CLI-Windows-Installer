@@ -12,7 +12,8 @@
             [expound.alpha :as expound]
             [clojure.set :as set]
             [clj-http.client :as client]
-            [clojure.java.shell :as sh])
+            [clojure.java.shell :as sh]
+            [clj-install.dev :as dev])
   (:import [java.util.zip ZipInputStream]))
 
 (s/def :install.edn/wrapper-version (s/and string?
@@ -103,8 +104,11 @@
         _ (info "Launching Inno setup compiler")
         result (sh/sh command param)]
     (if (= 0 (:exit result))
-      (do (info "And we're done ! Find the installer in the \"out\" directory.")
-          ctx)
+      (do
+        (logging/to-file-only #(report (:out result)))
+        (logging/to-screen-only #(report "Success"))
+        (info "And we're done ! Find the installer in the \"out\" directory.")
+        ctx)
       (throw (ex-info "Error compiling the installer."
                       {:command [command param]
                        :expanded-error (str (:out result) "/n" (:err result))})))))
@@ -116,6 +120,8 @@
         download-clojure-tools
         download-wrapper
         build-installer)
+    (when-not dev/*dev?*
+      (System/exit 0))
     (catch Exception ex
       (logging/log-exception ex))))
 

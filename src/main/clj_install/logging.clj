@@ -24,16 +24,22 @@
      {:appenders {:spit (appenders/spit-appender {:fname filename})}
       :output-fn (partial timbre/default-output-fn {:stacktrace-fonts {}})})))
 
+(defn to-file-only [func]
+  (timbre/with-config (update-in timbre/*config* [:appenders] dissoc :println)
+    (func)))
+
+(defn to-screen-only [func]
+  (timbre/with-config (update-in timbre/*config* [:appenders] dissoc :spit)
+    (func)))
+
 (defn log-exception [ex]
   (fatal (.getMessage ex))
   (when-let [info (ex-data ex)]
     (fatal (dissoc info :expanded-error)))
-  (timbre/with-config (update-in timbre/*config* [:appenders] dissoc :spit)
-    (fatal "Details in" @logfile-name))
-  (timbre/with-config (update-in timbre/*config* [:appenders] dissoc :println)
-    (fatal ex)
-    (when-let [info (:expanded-error (ex-data ex))]
-      (fatal info)))
+  (to-screen-only #(fatal "Details in" @logfile-name))
+  (to-file-only #(do (fatal ex)
+                     (when-let [info (:expanded-error (ex-data ex))]
+                       (fatal info))))
   (if dev/*dev?*
     (throw ex)
     (System/exit 1)))
