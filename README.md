@@ -16,7 +16,7 @@ If some people want to help and test this, I'll put a ready to go installer in t
 - Contains the Cognitect provided ClojureTools + my cmd cli wrapper
 - Removes any pre-existing ClojureTools installation
 - Checks for java, sends to the openjdk oracle build page if not present.
-- Sets the path and PSModulePath, and cleanup these on unistall
+- Sets the path and PSModulePath, and cleanup these on uninstall
 - Enables powershell scripts with a policy of RemoteSigned (required to Invoke-Clojure)
 - Adds both Clojure and clj to the start menu (not quite usefull but hey)
 - Adds a link to https://clojure.org/ to the start menu
