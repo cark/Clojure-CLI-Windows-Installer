@@ -1,1 +1,1 @@
-iscc /DMyAppVersion="%1" clojure.iss
+iscc /DCLAppVersion="%1" clojure.iss
