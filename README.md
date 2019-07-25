@@ -42,7 +42,7 @@ clojure -A:run
 ```
 ## Several choices were made 
 ### Inno setup
-We're relying on the Inno setup install builder. While this tool isn't open source, it is full featured, well established and maintained, and has been free for longer than Clojure existed. It allows for GUI or silent installations (/SILENT /VERYSILENT).
+We're relying on the Inno setup install builder. It is full featured, well established and maintained, and has been free for longer than Clojure existed. It allows for GUI or silent installations (/SILENT /VERYSILENT).
 The competition in the free area was either very hard to get into (Wix). Or introduced a pretty foreign language (NSIS).
 ### Install location
 The current powershell Clojure installer presents the user with a bewildering list of install paths. In this project, we're removing that choice, prefering to install Clojure in a canonical and Windows idiomatic programfiles\clojure location.
