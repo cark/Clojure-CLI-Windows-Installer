@@ -1,6 +1,6 @@
-# Clojure Windows CLI installer
+# Clojure CLI Windows Installer
 ## What is it ?
-This project aims at facilitating the installation process for clojure on windows. 
+This unofficial project aims at facilitating the installation process for clojure on windows. 
 ## Project goal
 My goal is to have this or something like it be adopted by Cognitect for the windows clojure distribution.
 ## Included
@@ -42,13 +42,13 @@ clojure -A:run
 ```
 ## Several choices were made 
 ### Inno setup
-We're relying on the Inno setup install builder. While this tool isn't open source, it is full featured, well maintained and has been free for longer than clojure existed. It allows for GUI or silent installations (/SILENT /VERYSILENT).
+We're relying on the Inno setup install builder. While this tool isn't open source, it is full featured, well established and maintained, and has been free for longer than Clojure existed. It allows for GUI or silent installations (/SILENT /VERYSILENT).
 The competition in the free area was either very hard to get into (Wix). Or introduced a pretty foreign language (NSIS).
 ### Install location
-The current clojure installer presents the  user with a bewildering list of install paths. In this project, we're removing that choice, prefering to install clojure in a canonical and windows idiomatic programfiles\clojure location.
-As to the location of the powershell modules, we're following [Microsoft's advice](https://docs.microsoft.com/en-us/powershell/developer/module/installing-a-powershell-module#installing-modules-in-a-product-directory) and install it in our "product directory".
+The current powershell Clojure installer presents the user with a bewildering list of install paths. In this project, we're removing that choice, prefering to install Clojure in a canonical and Windows idiomatic programfiles\clojure location.
+As to the location of the Powershell modules, we're following [Microsoft's advice](https://docs.microsoft.com/en-us/powershell/developer/module/installing-a-powershell-module#installing-modules-in-a-product-directory) and install it in our "product directory".
 ### Old ClojureTools installations
-These are just deleted. It remains an open question if we should preserve the old deps.edn files located in the powershell module.
+These are just deleted. It remains an open question if we should preserve the old deps.edn files located in the Powershell module.
 We're currently deleting it. I'm of the opinion that it has no business being there in the first place, or at least should not
 be the place where users configure their system/user wide deps.edn.
 ## License

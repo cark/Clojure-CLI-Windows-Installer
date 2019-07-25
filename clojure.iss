@@ -15,8 +15,18 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{519A0293-D0AC-45C8-9BA8-FB44805013BE}
 AppName={#MyAppName}
+#ifdef CLAppVersion
+AppVersion={#CLAppVersion}
+#endif
+#ifndef CLAppVersion
 AppVersion={#MyAppVersion}
+#endif
+#ifdef CLAppVersion
+AppVerName={#MyAppName} {#CLAppVersion}
+#endif
+#ifndef CLAppVersion
 AppVerName={#MyAppName} {#MyAppVersion}
+#endif
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
