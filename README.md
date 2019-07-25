@@ -8,7 +8,7 @@ There are two part to this.
 - the actual installer
 - building the installer
 ## The installer itself
-If some people want to help and test this, I'll put a ready to go installer in the releases.
+If some people want to help and test this, I'll put a ready to go installer in the [releases](https://github.com/cark/Clojure-CLI-Windows-Installer/releases).
 ### Installer Features
 - Your typical Windows installer and uninstaller
 - Silent install possible
