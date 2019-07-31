@@ -1,2 +1,2 @@
-{:wrapper-version "v0.0.4"
- :clojure-tools-version "1.10.1.466"}
+{:portable-cli-version "0.0.3"
+ :clojure-version "1.10.1.466"}

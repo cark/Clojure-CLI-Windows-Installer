@@ -16,10 +16,9 @@
             [clj-install.dev :as dev])
   (:import [java.util.zip ZipInputStream]))
 
-(s/def :install.edn/wrapper-version (s/and string?
-                                           #(str/starts-with? % "v")))
-(s/def :install.edn/clojure-tools-version string?)
-(s/def :install.edn/file (s/keys :req-un [:install.edn/clojure-tools-version :install.edn/wrapper-version]))
+(s/def :install.edn/portable-cli-version string?)
+(s/def :install.edn/clojure-version string?)
+(s/def :install.edn/file (s/keys :req-un [:install.edn/clojure-version :install.edn/portable-cli-version]))
 
 (def install-edn-filename "install.edn")
 
@@ -42,8 +41,8 @@
 (defn get-config []
   (-> (get-install-edn)
       validate-install-edn
-      (set/rename-keys {:wrapper-version :config/wrapper-version
-                        :clojure-tools-version :config/clojure-tools-version})))
+      (set/rename-keys {:portable-cli-version :config/portable-cli-version
+                        :clojure-version :config/clojure-version})))
 
 (defn delete-files-recursively
   [dir]
@@ -65,43 +64,33 @@
               (do (info "Directory:" filename)
                   (.mkdir (io/file filename)))
               (do (info "File:" filename)
+                  (io/make-parents (io/file filename))
                   (io/copy stream (io/file filename))))
             (recur)))))))
 
-(def clojure-tools-dir "ClojureTools")
+(def portable-cli-dir "clojure-cli")
 
-(defn clojure-tools-url [version]
-  (str "https://download.clojure.org/install/clojure-tools-" version ".zip"))
+(defn portable-cli-url [ctx]
+  (str "https://github.com/cark/clojure-cli-portable/releases/download/v" (:config/portable-cli-version ctx)
+       "/clojure-cli-win-" (:config/clojure-version ctx) ".zip"))
 
-(defn download-clojure-tools [ctx]
-  (info "Deleting directory" (str \" clojure-tools-dir \"))
-  (delete-files-recursively clojure-tools-dir)
-  (let [url (clojure-tools-url (:config/clojure-tools-version ctx))]
+(defn download-portable-cli [ctx]
+  (info "Deleting directory" (str \" portable-cli-dir \"))
+  (delete-files-recursively portable-cli-dir)
+  (let [url (portable-cli-url ctx)]
     (info "Downloading" url)
     (-> (client/get url {:as :byte-array}) :body io/input-stream (unzip-to "."))
-    ctx))
-
-(def wrapper-dir "Files")
-
-(defn wrapper-url [version]
-  (str "https://github.com/cark/clojure-win-cli-wrap/releases/download/" version "/clojure-win-cli-wrap.zip"))
-
-(defn download-wrapper [ctx]
-  (info "Deleting directory" (str \" wrapper-dir \"))
-  (delete-files-recursively wrapper-dir)
-  (let [url (wrapper-url (:config/wrapper-version ctx))]
-    (info "Downloading" url)
-    (-> (client/get url {:as :byte-array}) :body io/input-stream (unzip-to "Files"))
     ctx))
 
 (def out-dir "out")
 
 (defn build-installer [ctx]
   (info "Deleting directory" out-dir)
-  (delete-files-recursively out-dir)  
-  (let [command "make-installer.cmd"
-        param (:config/clojure-tools-version ctx)
-        _ (info "Launching Inno setup compiler")
+  (delete-files-recursively out-dir)
+  (.mkdir (io/file out-dir))
+  (let [command "nsis.cmd"
+        param (:config/clojure-version ctx)
+        _ (info "Launching Setup compiler")
         result (sh/sh command param)]
     (if (= 0 (:exit result))
       (do
@@ -117,8 +106,7 @@
   (try
     (logging/setup-logging)
     (-> (get-config)
-        download-clojure-tools
-        download-wrapper
+        download-portable-cli
         build-installer)
     (when-not dev/*dev?*
       (System/exit 0))

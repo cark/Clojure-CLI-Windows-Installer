@@ -1,41 +1,32 @@
-param([String]$path="C:\Program Files\blahblah",[String]$action="add",[String]$var="Path")
-function NormalizePath {
-    param([string]$p)
-    $p = $p.ToLower()
-    If ($p.Substring($p.Length-1, 1) -eq "\") {
-      $p.Substring(0, $p.Length-1)
-    } Else {
-      $p
-    }   
-  }
-function AddPath {    
-    param([String]$path,[String]$var)
-    $p = [Environment]::GetEnvironmentVariable($var, "Machine")
-    $p += ";" + $path
-    Write-Host $p
-    [Environment]::SetEnvironmentVariable($var,$p, "Machine")
-}
+param([String]$Action="add",[String]$InstallPath="c:\bleh")
 
-function RemovePath {
-    param([String]$path,[String]$var)
-    $normalizedPath = NormalizePath($path)
-    $Paths = [Environment]::GetEnvironmentVariable($var,"Machine")
-    $Paths =  $Paths -split ";"
-    $Paths =  $Paths | Select-Object -unique 
-    $list = @()
-    foreach ($item in $Paths) {
-      $normalizedItem = NormalizePath($item)
-      if ($normalizedItem -ne $normalizedPath) {
-        $list += $item
-      }
+function Add {
+  $key = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment', $true)
+  try {
+    $path = $key.GetValue('Path',$null,'DoNotExpandEnvironmentNames')  
+    if ( $path -notlike "*$InstallPath*" ) {
+      $key.SetValue('Path', $path + ";$InstallPath", 'ExpandString')
     }
-    $list=$list -join ";"
-    Write-Host $list
-    [Environment]::SetEnvironmentVariable($var,$list, "Machine")
+  }
+  finally {
+    $key.Dispose()
+  }
 }
 
-if ($action -eq "add") {
-    AddPath -var $var -path $path
-} elseif ($action -eq "remove") {
-    RemovePath -var $var -path $path
+function Remove {
+  $key = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment', $true)
+  try {
+    $path = $key.GetValue('Path',$null,'DoNotExpandEnvironmentNames')
+    $path = ($path.split(';') | Where-Object { $_ -ne $InstallPath}) -join ';'
+    $key.SetValue('Path', $path, 'ExpandString')
+  }
+  finally {
+    $key.Dispose()
+  }
+}
+
+if ( $Action -eq "add" ) {
+  Add
+} ElseIf ( $Action -eq "remove" ) {
+  Remove
 }
