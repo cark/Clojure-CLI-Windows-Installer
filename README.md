@@ -13,27 +13,23 @@ If some people want to help and test this, I'll put a ready to go installer in t
 - Your typical Windows installer and uninstaller
 - Silent install possible
 - An EPL confirmation box.
-- Contains the Cognitect provided ClojureTools + my cmd cli wrapper
-- Removes any pre-existing ClojureTools installation
+- Contains exerything needed to use Clojure with deps.edn
 - Checks for java, sends to the openjdk oracle build page if not present.
-- Sets the path and PSModulePath, and cleanup these on uninstall
-- Enables powershell scripts with a policy of RemoteSigned (required to Invoke-Clojure)
 - Adds both Clojure and clj to the start menu (not quite usefull but hey)
 - Adds a link to https://clojure.org/ to the start menu
 ## Install Builder
 ### Prerequired
 - A windows computer
-- [Inno setup 6](http://www.jrsoftware.org/isdl.php) must be installed and available in the path.
+- [Nullsoft Scriptable Install System](https://nsis.sourceforge.io/Main_Page) must be installed and available in the path.
 ### Building the installer
 The builder will
-- download ClojureTools
-- download the [exploratory cli wrapper](https://github.com/cark/clojure-win-cli-wrap)
+- download the [Clojure-cli-portable](https://github.com/cark/clojure-cli-portable) release
 - build the installer executable
 
 First the `install.edn` file (in the project root directory) must be updated with the current versions of ClojureTools and clojure-win-cli-wrap
 ```clojure
-{:wrapper-version "v0.0.4"
- :clojure-tools-version "1.10.1.466"}
+{:portable-cli-version "0.0.3"
+ :clojure-version "1.10.1.466"}
 ```
 
 Then, from the project root, the install builder must be launched:
@@ -42,15 +38,12 @@ clojure -A:run
 ```
 ## Several choices were made 
 ### Inno setup
-We're relying on the Inno setup install builder. It is full featured, well established and maintained, and has been free for longer than Clojure existed. It allows for GUI or silent installations (/SILENT /VERYSILENT).
-The competition in the free area was either very hard to get into (Wix). Or introduced a pretty foreign language (NSIS).
+We're relying on the NSIS install builder. Because it may be built on linux and produce windows installers from there. It allows for GUI or silent installations (/S).
 ### Install location
 The current powershell Clojure installer presents the user with a bewildering list of install paths. In this project, we're removing that choice, prefering to install Clojure in a canonical and Windows idiomatic programfiles\clojure location.
-As to the location of the Powershell modules, we're following [Microsoft's advice](https://docs.microsoft.com/en-us/powershell/developer/module/installing-a-powershell-module#installing-modules-in-a-product-directory) and install it in our "product directory".
+This version does not include the official Powershell modules, but replaces these instead with a binary implementation.
 ### Old ClojureTools installations
-These are just deleted. It remains an open question if we should preserve the old deps.edn files located in the Powershell module.
-We're currently deleting it. I'm of the opinion that it has no business being there in the first place, or at least should not
-be the place where users configure their system/user wide deps.edn.
+You're advised to uninstall previously existing clojure CLIs
 ## License
 Copyright (c) Sacha De Vos and contributors. All rights reserved.
 
