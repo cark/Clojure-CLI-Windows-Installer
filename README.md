@@ -28,8 +28,8 @@ The builder will
 
 First the `install.edn` file (in the project root directory) must be updated with the current versions of ClojureTools and clojure-win-cli-wrap
 ```clojure
-{:portable-cli-version "0.0.3"
- :clojure-version "1.10.1.466"}
+{:portable-cli-version "0.0.10"
+ :clojure-version "1.10.1.469"}
 ```
 
 Then, from the project root, the install builder must be launched:
